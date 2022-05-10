@@ -1,8 +1,8 @@
 {
-  "name": "threejs-starter",
+  "name": "vtthree2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,8 @@
     "ol-mapbox-style": "^8.0.7",
     "parcel-bundler": "^1.12.5",
     "proj4": "^2.8.0",
-    "three": "^0.128.0",
+    "@types/three": "^0.139.0",
+    "three": "^0.140.0",
     "xstate": "^4.31.0"
   },
   "devDependencies": {

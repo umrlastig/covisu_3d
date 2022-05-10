@@ -1,10 +1,10 @@
 import { VTController } from "./VTController";
-import { IGN_STYLES } from "./OLViewer2";
+import { IGN_STYLES } from "./OLViewer";
 import { RENDER_MODE, GraphicParams } from "./VTThreeViewer";
 import { BUILDINGS_SOURCE } from "./Constants";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
-import { PlanarControls } from "./controls/PlanarControlsLiteXState";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -48,11 +48,11 @@ controller.init(center, zoom).then(() => {
     controller.textures.get(IGN_STYLES.PLAN)
   );
   controller.setInitialGraphicParams(startGraphicParams);
-  let planarControls = new PlanarControls(
+  let controls = new OrbitControls(
     controller.threeViewer.currentCamera,
-    controller.threeViewer.renderer,
-    controller.threeViewer.sceneGroup.children
+    controller.threeViewer.renderer.domElement
   );
-  planarControls.enabled = true;
+  controls.target.set(0, 0, 0);
+  controls.update();
   controller.threeViewer.animate();
 });

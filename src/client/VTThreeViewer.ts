@@ -4,7 +4,7 @@ import { OrbitCamera } from "./OrbitCamera";
 // import { PlanarControls } from "./controls/PlanarControlsLiteXState";
 // import { StreetControls } from "./controls/StreetControlsXState";
 import * as Utils from "./Utils";
-import { IGN_STYLES } from "./OLViewer2";
+import { IGN_STYLES } from "./OLViewer";
 import vert from "./shaders/basic_tex_vert.glsl";
 import frag from "./shaders/mix_textures.glsl";
 import fragTextColor from "./shaders/mix_color_texture.glsl";
@@ -120,7 +120,7 @@ export class VTThreeViewer {
     });
     this.renderer.setSize(this.width, this.height);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    //this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
     container.appendChild(this.renderer.domElement);
     // document.body.appendChild(this.renderer.domElement);
@@ -184,6 +184,7 @@ export class VTThreeViewer {
     this.sceneGroup.position.z = -2;
     this.sceneGroup.rotateX(-Math.PI / 2);
     this.sceneGroup.scale.set(0.001, 0.001, 0.001);
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
   }
 
   addHemisphereLights() {
@@ -219,7 +220,6 @@ export class VTThreeViewer {
       this.startCameraPosition = this.currentCamera.position.clone();
       this.startCameraQuaternion = this.currentCamera.quaternion.clone();
     }
-
     this.planes.push(plane);
     this.sceneGroup.add(plane);
   }
@@ -564,7 +564,7 @@ export class VTThreeViewer {
 
   getIntersectionPoint(x, y) {
     this.rayCaster.setFromCamera(new THREE.Vector2(x, y), this.currentCamera);
-    var intersects = this.rayCaster.intersectObjects(this.planes.children);
+    var intersects = this.rayCaster.intersectObjects(this.planes);
     if (intersects[0] != null) {
       return intersects[0].point;
     } else {

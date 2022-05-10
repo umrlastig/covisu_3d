@@ -4,7 +4,7 @@ import {
   GraphicParams,
   MATERIAL_TYPE,
 } from "./VTThreeViewer";
-import { OLViewer, IGN_STYLES } from "./OLViewer2";
+import { OLViewer, IGN_STYLES } from "./OLViewer";
 import { ZOOM_RES_L93 } from "./Utils";
 import { proj3857, proj4326, BUILDINGS_SOURCE } from "./Constants";
 import proj4 from "proj4";
