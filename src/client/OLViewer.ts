@@ -19,7 +19,8 @@ export enum IGN_STYLES {
   PLAN = "PLAN",
   GRIS = "GRIS",
   MUET = "MUET",
-  TONER = "TONER"
+  TONER = "TONER",
+  ATTENUE = "ATTENUE",
 }
 
 let ignStyleMap = new Map();
@@ -34,6 +35,10 @@ ignStyleMap.set(
 ignStyleMap.set(
   IGN_STYLES.MUET,
   "https://wxs.ign.fr/choisirgeoportail/static/vectorTiles/styles/PLAN.IGN/sans_toponymes.json"
+);
+ignStyleMap.set(
+  IGN_STYLES.ATTENUE,
+  "https://wxs.ign.fr/essentiels/static/vectorTiles/styles/PLAN.IGN/attenue.json"
 );
 
 export class OLViewer {
@@ -112,7 +117,7 @@ export class OLViewer {
   async createMapTextures(width, height, olFactor, center, zoom, styles) {
     for (let i = 1; i < styles.length; i++) {
       let elements = this.createMapElement(
-        "secondary"+i,
+        "secondary" + i,
         width,
         height,
         olFactor,
@@ -146,8 +151,8 @@ export class OLViewer {
       target: id,
       view: new View({
         center: center,
-        zoom: zoom
-      })
+        zoom: zoom,
+      }),
     });
 
     let layer = new VectorTileLayer({
@@ -157,12 +162,11 @@ export class OLViewer {
         tileGrid: createXYZ({ maxZoom: 21 }),
         format: format,
         //projection: new Projection({ code: "EPSG:3857" }),
-        url:
-          "https://wxs.ign.fr/choisirgeoportail/geoportail/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf"
+        url: "https://wxs.ign.fr/choisirgeoportail/geoportail/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf",
       }),
       minResolution: 0,
       maxResolution: 200000,
-      declutter: true
+      declutter: true,
     });
     return { domElement: domElement, layer: layer, map: map };
   }
@@ -173,12 +177,7 @@ export class OLViewer {
     let style = await response.json();
 
     await olms.applyStyle(layer, style, "plan_ign");
-    if (
-      !map
-        .getLayers()
-        .getArray()
-        .includes(layer)
-    ) {
+    if (!map.getLayers().getArray().includes(layer)) {
       map.addLayer(layer);
     }
 
@@ -201,7 +200,7 @@ export class OLViewer {
     return new Promise((resolve, reject) => {
       let throwRenderComplete = false;
       let timeout = null;
-      map.on("rendercomplete", function(data) {
+      map.on("rendercomplete", function (data) {
         throwRenderComplete = throwRenderComplete ? false : true;
         if (timeout != null) {
           clearTimeout(timeout);
@@ -212,12 +211,12 @@ export class OLViewer {
               map: map,
               layer: layer,
               canvas: domElement.getElementsByTagName("canvas")[0],
-              domElement
+              domElement,
             });
           }
         }, 500);
       });
-      layer.on("prerender", function(data) {
+      layer.on("prerender", function (data) {
         //console.log("pre render!");
         throwRenderComplete = false;
       });

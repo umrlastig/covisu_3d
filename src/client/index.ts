@@ -48,7 +48,7 @@ const olFactor = 1;
 let buildingColors = [0x594736];
 
 let startGraphicParams: GraphicParams = {
-  planeTexture: IGN_STYLES.PLAN,
+  planeTexture: IGN_STYLES.GRIS,
   layerParams: new Map(),
 };
 
@@ -60,7 +60,7 @@ let controller = new VTController(
   zoom,
   olFactor,
   [],
-  [IGN_STYLES.PLAN],
+  [IGN_STYLES.GRIS],
   RENDER_MODE.SINGLE,
   FEATURES_SOURCE.WFS
 );
