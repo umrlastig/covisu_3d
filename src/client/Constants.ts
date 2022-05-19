@@ -30,10 +30,20 @@ export const ORTHO = "ORTHOIMAGERY.ORTHOPHOTOS";
 export enum INTERACTION_MODE {
   CAMERA_COUPLED,
   GO_TO,
-  DRAG_GO
+  DRAG_GO,
 }
 
-export enum BUILDINGS_SOURCE {
+export enum LAYERS_NAMES {
+  BUILDINGS,
+  ROADS,
+}
+
+export enum FEATURES_SOURCE {
   VECTOR_TILES,
-  WFS
+  WFS,
+}
+
+export interface Layer {
+  name: string;
+  colors: any;
 }

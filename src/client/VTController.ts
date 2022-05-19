@@ -6,7 +6,7 @@ import {
 } from "./VTThreeViewer";
 import { OLViewer, IGN_STYLES } from "./OLViewer";
 import { ZOOM_RES_L93 } from "./Utils";
-import { proj3857, proj4326, BUILDINGS_SOURCE } from "./Constants";
+import { proj3857, proj4326, FEATURES_SOURCE, Layer } from "./Constants";
 import proj4 from "proj4";
 import GeoportalWfsClient from "../libs/geoportal-wfs-client-master/dist/geoportal-wfs-client.js";
 import * as THREE from "three";
@@ -24,13 +24,12 @@ export class VTController {
   renderMode: RENDER_MODE;
   backgroundColor: any;
   state: any;
-  layers: string[];
+  layers: Layer[];
   features: Map<string, Map<number, any>>;
   textures: Map<IGN_STYLES, THREE.Texture>;
   styles: IGN_STYLES[];
-  buildingsColors: number[];
-  buildingsSource: BUILDINGS_SOURCE;
   scale: number;
+  source: FEATURES_SOURCE;
   constructor(
     width: number,
     height: number,
@@ -38,11 +37,10 @@ export class VTController {
     centerZ,
     zoom: number,
     olFactor: number,
-    layers: string[],
+    layers: Layer[],
     styles: IGN_STYLES[],
     renderMode: RENDER_MODE,
-    buildingsColors: number[],
-    buildingsSource: BUILDINGS_SOURCE
+    source: FEATURES_SOURCE
   ) {
     this.width = width;
     this.height = height;
@@ -57,8 +55,7 @@ export class VTController {
     this.features = new Map();
     this.loadTileFeatures = this.loadTileFeatures.bind(this);
     this.textures = new Map();
-    this.buildingsColors = buildingsColors;
-    this.buildingsSource = buildingsSource;
+    this.source = source;
   }
 
   async init(center: number[], zoom: number) {
@@ -108,19 +105,26 @@ export class VTController {
       });
 
       this.olViewer.addEndAllListener(() => {
-        if (self.buildingsSource == BUILDINGS_SOURCE.VECTOR_TILES) {
+        if (self.source == FEATURES_SOURCE.VECTOR_TILES) {
           resolve();
-        } else if (self.buildingsSource == BUILDINGS_SOURCE.WFS) {
-          self.createWFSClient(extent).then(() => {
+        } else if (self.source == FEATURES_SOURCE.WFS) {
+          if (self.layers.length == 0) {
             resolve();
-          });
+          } else {
+            for (let layer of self.layers) {
+              self.createWFSClient(extent, layer).then(() => {
+                resolve();
+              });
+            }
+          }
+          //this will work only for one layer have to fix for multiple layers
         }
       });
 
       this.olViewer.layer.getSource().on("tileloadstart", function (evt) {
         self.state.loading++;
       });
-      if (self.buildingsSource == BUILDINGS_SOURCE.VECTOR_TILES) {
+      if (self.source == FEATURES_SOURCE.VECTOR_TILES) {
         this.olViewer.layer
           .getSource()
           .on("tileloadend", this.loadTileFeatures);
@@ -128,7 +132,7 @@ export class VTController {
     });
   }
 
-  createWFSClient(extent) {
+  createWFSClient(extent, layer) {
     return new Promise((resolve, error) => {
       let lowerCorner = proj4(proj3857, proj4326, [extent[0], extent[1]]);
       let upperCorner = proj4(proj3857, proj4326, [extent[2], extent[3]]);
@@ -152,20 +156,21 @@ export class VTController {
       let layers = [
         // "BDTOPO_BDD_WLD_WGS84G:bati_indifferencie",
         // "BDTOPO_BDD_WLD_WGS84G:bati_remarquable",
-        "BDTOPO_V3:batiment",
+        //"BDTOPO_V3:batiment",
+        layer.name,
       ];
       let self = this;
       let i = 0;
-      for (let layer of layers) {
+      for (let layerWFS of layers) {
         client
-          .getFeatures(layer, params)
+          .getFeatures(layerWFS, params)
           .then(function (featureCollection) {
             console.log(featureCollection);
             self.threeViewer.addFeatures(
               featureCollection.features,
               self.olViewer.map.getView().getCenter(),
               ZOOM_RES_L93[self.olViewer.map.getView().getZoom()],
-              layer,
+              layerWFS,
               self.renderMode,
               (coords) => {
                 let coords3857 = proj4(proj4326, proj3857, coords);
@@ -175,7 +180,7 @@ export class VTController {
                 ];
               },
               self.centerZ,
-              self.buildingsColors,
+              layer.colors,
               (feature) => feature.geometry,
               (geometry) => geometry.coordinates[0],
               (feature) => feature.properties
