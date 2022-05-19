@@ -14,30 +14,6 @@ const olFactor = 1;
 let center = [259909, 6249540];
 let centerZ = 0;
 
-let buildingColors = [
-  0x594736, 0xa68f7b, 0xd9c3b0, 0x591202, 0xf2f2f2, 0xf2e7dc,
-];
-
-let layers = [
-  {
-    name: "BDTOPO_V3:batiment",
-    colors: buildingColors,
-  },
-];
-
-// let controller = new VTController(
-//   width,
-//   height,
-//   center,
-//   centerZ,
-//   zoom,
-//   olFactor,
-//   layers,
-//   [IGN_STYLES.PLAN, IGN_STYLES.MUET],
-//   RENDER_MODE.SINGLE,
-//   FEATURES_SOURCE.WFS
-// );
-
 let controller = new VTController(
   width,
   height,
@@ -53,19 +29,10 @@ let controller = new VTController(
 
 let startGraphicParams: GraphicParams = {
   planeTexture: IGN_STYLES.PLAN,
-  buildingsHeight: 1,
-  buildingsOpacity: 1,
+  layerParams: new Map(),
 };
 
-function render() {
-  controller.render();
-  requestAnimationFrame(render);
-}
-
 controller.init(center, zoom).then(() => {
-  // controller.threeViewer.setPlaneTexture(
-  //   controller.textures.get(IGN_STYLES.PLAN)
-  // );
   controller.setInitialGraphicParams(startGraphicParams);
   let controls = new OrbitControls(
     controller.threeViewer.currentCamera,

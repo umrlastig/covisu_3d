@@ -27,12 +27,18 @@ export enum MATERIAL_TYPE {
   TEXTURE,
 }
 
+export interface featureGraphicParams {
+  scale: THREE.Vector3;
+  opacity: number;
+}
+
 export interface GraphicParams {
   //planeMaterial: THREE.Material;
   planeTexture: IGN_STYLES;
+  layerParams: Map<string, featureGraphicParams>;
   //planeColor: any;
-  buildingsHeight: number;
-  buildingsOpacity: number;
+  //buildingsHeight: number;
+  //buildingsOpacity: number;
   //colorBuildings: any;
 }
 

@@ -250,14 +250,16 @@ export class VTController {
       this.textures.get(graphicParams.planeTexture)
     );
 
-    for (let feature of this.threeViewer.featuresAllGroup) {
-      feature.material.opacity = graphicParams.buildingsOpacity;
-      feature.scale.set(
-        1,
-        1,
-        feature.userData.height * graphicParams.buildingsHeight
-      );
-    }
+    graphicParams.layerParams.forEach((params, layer) => {
+      for (let feature of this.threeViewer.featuresGroup.get(layer)) {
+        feature.material.opacity = params.opacity;
+        feature.scale.set(
+          params.scale.x,
+          params.scale.y,
+          feature.userData.height * params.scale.z
+        );
+      }
+    });
   }
 
   enableVR() {
